@@ -3,7 +3,32 @@ name = "doclight-wasm"
 version = "0.1.0"
 authors = ["Kai Page <kai@quantaly.net>"]
 edition = "2018"
+description = "PDF creation in Wasm for Doclight"
+repository = "https://github.com/Quantaly/doclight"
+license = "Apache-2.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[lib]
+crate-type = ["cdylib"]
+
+# [features]
+# default = ["wee_alloc"]
+
 [dependencies]
+jpeg-to-pdf = "0.1"
+wasm-bindgen = "0.2"
+
+wee_alloc = { version = "0.4", optional = true }
+
+# Optimize heavily; the code will be downloaded and run much more often than it is compiled.
+[profile.release]
+opt-level = "s"
+# debug = false
+# debug-assertions = false
+# overflow-checks = false
+lto = true
+panic = "abort"
+# incremental = false
+codegen-units = 1
+# rpath = false
