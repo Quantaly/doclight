@@ -4,7 +4,7 @@
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>Doclight</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn icon disabled>
+      <v-btn icon :disabled="images.length === 0" @click="downloadPdf">
         <v-icon>save_alt</v-icon>
       </v-btn>
       <v-btn icon disabled>
@@ -16,7 +16,7 @@
       <v-container fluid>
         <v-text-field label="Document title" v-model="name"></v-text-field>
 
-        <div class="image-container">
+        <div class="image-container" :class="{ 'no-overflow-x': drawer }">
           <div class="container-padding"></div>
           <div class="image-display" v-for="src in images" :key="src">
             <img :src="src" />
@@ -72,6 +72,10 @@
   gap: 16px;
 }
 
+.no-overflow-x {
+  overflow-x: hidden !important;
+}
+
 .container-padding {
   min-width: 2px;
 }
@@ -92,6 +96,7 @@ img {
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import wasm from "./wasm";
 
 @Component({})
 export default class App extends Vue {
@@ -121,6 +126,34 @@ export default class App extends Vue {
     document.body.appendChild(input);
     input.click();
     input.remove();
+  }
+
+  async createPdf(): Promise<Blob | null> {
+    const w = await wasm;
+    const job = w.PdfJob.new();
+    for (const src of this.images) {
+      job.add_image(new Uint8Array(await (await fetch(src)).arrayBuffer()));
+    }
+    try {
+      const result = job.create_pdf();
+      return new Blob([result], { type: "application/pdf" });
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  }
+
+  async downloadPdf() {
+    const blob = await this.createPdf();
+    if (blob) {
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `${this.name}.pdf`;
+      a.style.display = "none";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
   }
 }
 </script>
