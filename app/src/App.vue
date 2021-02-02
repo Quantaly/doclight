@@ -1,61 +1,47 @@
 <template>
   <v-app>
-    <v-app-bar
-      app
-      color="primary"
-      dark
-    >
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
-
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
-      </div>
-
+    <v-app-bar app color="primary" dark>
+      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-toolbar-title>Doclight</v-toolbar-title>
       <v-spacer></v-spacer>
-
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
+      <v-btn icon disabled>
+        <v-icon>save_alt</v-icon>
+      </v-btn>
+      <v-btn icon disabled>
+        <v-icon>share</v-icon>
       </v-btn>
     </v-app-bar>
 
     <v-main>
-      <HelloWorld/>
+      <v-container fluid>
+        <v-text-field label="Document title"></v-text-field>
+      </v-container>
+
+      <v-btn fixed bottom right fab dark color="primary" aria-label="Add photo">
+        <v-icon>camera_alt</v-icon>
+      </v-btn>
     </v-main>
+
+    <v-navigation-drawer v-model="drawer" app>
+      <v-list>
+        <v-list-item>
+          <v-list-item-content>
+            <v-list-item-title>Some document</v-list-item-title>
+          </v-list-item-content>
+          <v-list-item-action>
+            <v-icon>delete</v-icon>
+          </v-list-item-action>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
   </v-app>
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
-import HelloWorld from './components/HelloWorld.vue';
+import { Component, Vue } from "vue-property-decorator";
 
-export default Vue.extend({
-  name: 'App',
-
-  components: {
-    HelloWorld,
-  },
-
-  data: () => ({
-    //
-  }),
-});
+@Component({})
+export default class App extends Vue {
+  drawer = null;
+}
 </script>
