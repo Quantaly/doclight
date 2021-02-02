@@ -14,10 +14,36 @@
 
     <v-main>
       <v-container fluid>
-        <v-text-field label="Document title"></v-text-field>
+        <v-text-field label="Document title" v-model="name"></v-text-field>
+
+        <div class="image-container">
+          <div class="container-padding"></div>
+          <div class="image-display" v-for="src in images" :key="src">
+            <img :src="src" />
+            <v-btn tile>
+              <v-icon>chevron_left</v-icon>
+            </v-btn>
+            <v-btn tile>
+              <v-icon>clear</v-icon>
+            </v-btn>
+            <v-btn tile>
+              <v-icon>chevron_right</v-icon>
+            </v-btn>
+          </div>
+          <div class="container-padding"></div>
+        </div>
       </v-container>
 
-      <v-btn fixed bottom right fab dark color="primary" aria-label="Add photo">
+      <v-btn
+        fixed
+        bottom
+        right
+        fab
+        dark
+        color="primary"
+        aria-label="Add photo"
+        @click="addImage"
+      >
         <v-icon>camera_alt</v-icon>
       </v-btn>
     </v-main>
@@ -37,11 +63,64 @@
   </v-app>
 </template>
 
+<style lang="scss">
+.image-container {
+  padding: 18px 0;
+  background-color: lightgrey;
+  overflow-x: scroll;
+  display: flex;
+  gap: 16px;
+}
+
+.container-padding {
+  min-width: 2px;
+}
+
+.image-display {
+  display: grid;
+  grid-template-rows: auto auto;
+  grid-template-columns: auto auto auto;
+  grid-template-areas: "img img img" "left delete right";
+  gap: 4px;
+}
+
+img {
+  grid-area: img;
+  max-height: 50vh;
+}
+</style>
+
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 
 @Component({})
 export default class App extends Vue {
   drawer = null;
+  name = "";
+  images: string[] = [];
+
+  created() {
+    const now = new Date();
+    this.name =
+      `${now.getMonth() + 1}-${now.getDate()}-${now.getFullYear()} ` +
+      `${now.getHours()}:` +
+      `${now.getMinutes() < 10 ? "0" : ""}${now.getMinutes()}`;
+  }
+
+  addImage() {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/jpeg";
+    input.setAttribute("capture", "environment");
+    input.style.display = "none";
+    input.addEventListener("input", () => {
+      if (input?.files?.[0]) {
+        this.images.push(URL.createObjectURL(input.files[0]));
+      }
+    });
+    document.body.appendChild(input);
+    input.click();
+    input.remove();
+  }
 }
 </script>
