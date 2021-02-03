@@ -91,6 +91,7 @@
 img {
   grid-area: img;
   max-height: 50vh;
+  margin: auto;
 }
 </style>
 
