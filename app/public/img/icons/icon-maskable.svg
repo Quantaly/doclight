@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+    <rect width="512" height="512" fill="#3f51b5" />
+    <!-- maskable safe zone -->
+    <!-- <circle cx="256" cy="256" r="204" fill="#0f0" /> -->
+    <path d="M 128 512
+             L 128 128
+             L 320 128
+             L 384 192
+             L 384 512"
+        fill-opacity="0" stroke="#fff" stroke-width="16" />
+    <circle cx="256" cy="256" r="64" fill-opacity="0" stroke="#fff" stroke-width="16" />
+</svg>
