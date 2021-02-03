@@ -17,12 +17,6 @@ cd wasm-lib
 wasm-pack build
 ```
 
-The Vue build process will eventually complain if the resulting package does not have an ESLint configuration, so add a basic `.eslintrc.js`:
-
-```
-echo 'module.exports = {};' > pkg/.eslintrc.js
-```
-
 Now install the Vue app dependencies:
 
 ```

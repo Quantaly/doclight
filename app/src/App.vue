@@ -1,15 +1,15 @@
 <template>
   <v-app>
     <v-app-bar app color="primary" dark>
-      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+      <!-- <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon> -->
       <v-toolbar-title>Doclight</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn icon :disabled="images.length === 0" @click="downloadPdf">
         <v-icon>save_alt</v-icon>
       </v-btn>
-      <v-btn icon disabled>
+      <!-- <v-btn icon disabled>
         <v-icon>share</v-icon>
-      </v-btn>
+      </v-btn> -->
     </v-app-bar>
 
     <v-main>
@@ -18,15 +18,19 @@
 
         <div class="image-container" :class="{ 'no-overflow-x': drawer }">
           <div class="container-padding"></div>
-          <div class="image-display" v-for="src in images" :key="src">
+          <div class="image-display" v-for="(src, i) in images" :key="src">
             <img :src="src" />
-            <v-btn tile>
+            <v-btn tile :disabled="i === 0" @click="swapImageLeft(i)">
               <v-icon>chevron_left</v-icon>
             </v-btn>
-            <v-btn tile>
+            <v-btn tile @click="deleteImage(i)">
               <v-icon>clear</v-icon>
             </v-btn>
-            <v-btn tile>
+            <v-btn
+              tile
+              :disabled="i === images.length - 1"
+              @click="swapImageRight(i)"
+            >
               <v-icon>chevron_right</v-icon>
             </v-btn>
           </div>
@@ -48,7 +52,7 @@
       </v-btn>
     </v-main>
 
-    <v-navigation-drawer v-model="drawer" app>
+    <!-- <v-navigation-drawer v-model="drawer" app>
       <v-list>
         <v-list-item>
           <v-list-item-content>
@@ -59,7 +63,7 @@
           </v-list-item-action>
         </v-list-item>
       </v-list>
-    </v-navigation-drawer>
+    </v-navigation-drawer> -->
   </v-app>
 </template>
 
@@ -127,6 +131,22 @@ export default class App extends Vue {
     document.body.appendChild(input);
     input.click();
     input.remove();
+  }
+
+  swapImageLeft(i: number) {
+    const tmp = this.images[i - 1];
+    this.$set(this.images, i - 1, this.images[i]);
+    this.$set(this.images, i, tmp);
+  }
+
+  swapImageRight(i: number) {
+    const tmp = this.images[i + 1];
+    this.$set(this.images, i + 1, this.images[i]);
+    this.$set(this.images, i, tmp);
+  }
+
+  deleteImage(i: number) {
+    URL.revokeObjectURL(this.images.splice(i, 1)[0]);
   }
 
   async createPdf(): Promise<Blob | null> {
