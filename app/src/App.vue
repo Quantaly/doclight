@@ -64,6 +64,14 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer> -->
+
+    <v-snackbar v-model="snackbars.downloadSuccess" color="green">
+      Export successful.
+    </v-snackbar>
+
+    <v-snackbar v-model="snackbars.downloadError" color="red">
+      An unexpected error occurred. One or more images may be corrupted.
+    </v-snackbar>
   </v-app>
 </template>
 
@@ -108,6 +116,11 @@ export default class App extends Vue {
   drawer = null;
   name = "";
   images: string[] = [];
+
+  snackbars = {
+    downloadSuccess: false,
+    downloadError: false,
+  };
 
   created() {
     const now = new Date();
@@ -174,6 +187,9 @@ export default class App extends Vue {
       document.body.appendChild(a);
       a.click();
       a.remove();
+      this.snackbars.downloadSuccess = true;
+    } else {
+      this.snackbars.downloadError = true;
     }
   }
 }
