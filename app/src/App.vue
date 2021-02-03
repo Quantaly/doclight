@@ -144,14 +144,15 @@ export default class App extends Vue {
       `${now.getHours()}:` +
       `${now.getMinutes() < 10 ? "0" : ""}${now.getMinutes()}`;
 
-    if (!localStorage.getItem("doclight:pwaPromptDontShow")) {
-      window.addEventListener("beforeinstallprompt", (e) => {
-        e.preventDefault();
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+
+      if (!localStorage.getItem("doclight:pwaPromptDontShow")) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this.pwaEvent = e as any;
         this.snackbars.pwaPrompt = true;
-      });
-    }
+      }
+    });
   }
 
   addImage() {
