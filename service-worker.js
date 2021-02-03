@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/doclight/precache-manifest.cf71523f509aa2d2f5f84420375504c1.js"
+  "/doclight/precache-manifest.7cddec4b99e396a3601637eeb34d5f30.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "doclight"});
