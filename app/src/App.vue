@@ -72,6 +72,18 @@
     <v-snackbar v-model="snackbars.downloadError" color="red">
       An unexpected error occurred. One or more images may be corrupted.
     </v-snackbar>
+
+    <v-snackbar v-model="snackbars.pwaPrompt" vertical timeout="-1">
+      Install as an app for the best experience!
+
+      <template v-slot:action="{ attrs }">
+        <v-btn color="primary" v-bind="attrs" @click="installPwa">Yes</v-btn>
+        <v-btn text v-bind="attrs" @click="dismissPwaPrompt">No</v-btn>
+        <v-btn text v-bind="attrs" @click="permaDismissPwaPrompt"
+          >Don't show again</v-btn
+        >
+      </template>
+    </v-snackbar>
   </v-app>
 </template>
 
@@ -120,7 +132,10 @@ export default class App extends Vue {
   snackbars = {
     downloadSuccess: false,
     downloadError: false,
+    pwaPrompt: false,
   };
+
+  pwaEvent: { prompt: () => Promise<void> } | null = null;
 
   created() {
     const now = new Date();
@@ -128,6 +143,15 @@ export default class App extends Vue {
       `${now.getMonth() + 1}-${now.getDate()}-${now.getFullYear()} ` +
       `${now.getHours()}:` +
       `${now.getMinutes() < 10 ? "0" : ""}${now.getMinutes()}`;
+
+    if (!localStorage.getItem("doclight:pwaPromptDontShow")) {
+      window.addEventListener("beforeinstallprompt", (e) => {
+        e.preventDefault();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        this.pwaEvent = e as any;
+        this.snackbars.pwaPrompt = true;
+      });
+    }
   }
 
   addImage() {
@@ -191,6 +215,20 @@ export default class App extends Vue {
     } else {
       this.snackbars.downloadError = true;
     }
+  }
+
+  installPwa() {
+    this.snackbars.pwaPrompt = false;
+    this.pwaEvent?.prompt();
+  }
+
+  dismissPwaPrompt() {
+    this.snackbars.pwaPrompt = false;
+  }
+
+  permaDismissPwaPrompt() {
+    this.snackbars.pwaPrompt = false;
+    localStorage.setItem("doclight:pwaPromptDontShow", "f");
   }
 }
 </script>
