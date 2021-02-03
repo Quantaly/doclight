@@ -4,7 +4,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/doclight/c96944b55b227c096254.module.wasm"
   },
   {
-    "revision": "c99fe3085469d1feb7d3",
+    "revision": "9e2714c4efb858be9d71",
     "url": "/doclight/css/app.cef5fbbe.css"
   },
   {
@@ -12,12 +12,12 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/doclight/css/chunk-vendors.655ba44d.css"
   },
   {
-    "revision": "7ae89b3c3028b511ec88900bc89c4eb6",
+    "revision": "de27579401bca8827aea31e7df6fa8bd",
     "url": "/doclight/index.html"
   },
   {
-    "revision": "c99fe3085469d1feb7d3",
-    "url": "/doclight/js/app.c47bd337.js"
+    "revision": "9e2714c4efb858be9d71",
+    "url": "/doclight/js/app.4464bbec.js"
   },
   {
     "revision": "47b1a7d63940132e0ffc",
