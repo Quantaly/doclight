@@ -7,9 +7,14 @@
       <v-btn icon :disabled="images.length === 0" @click="downloadPdf">
         <v-icon>save_alt</v-icon>
       </v-btn>
-      <!-- <v-btn icon disabled>
+      <v-btn
+        icon
+        v-if="shareApiAvailable"
+        :disabled="images.length === 0"
+        @click="sharePdf"
+      >
         <v-icon>share</v-icon>
-      </v-btn> -->
+      </v-btn>
     </v-app-bar>
 
     <v-main>
@@ -101,6 +106,7 @@ img {
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import * as sharing from "./file-sharing";
 import wasm from "./wasm";
 
 @Component({})
@@ -108,6 +114,7 @@ export default class App extends Vue {
   drawer = null;
   name = "";
   images: string[] = [];
+  shareApiAvailable = false;
 
   created() {
     const now = new Date();
@@ -115,6 +122,7 @@ export default class App extends Vue {
       `${now.getMonth() + 1}-${now.getDate()}-${now.getFullYear()} ` +
       `${now.getHours()}:` +
       `${now.getMinutes() < 10 ? "0" : ""}${now.getMinutes()}`;
+    this.shareApiAvailable = sharing.detectFeature();
   }
 
   addImage() {
@@ -149,7 +157,7 @@ export default class App extends Vue {
     URL.revokeObjectURL(this.images.splice(i, 1)[0]);
   }
 
-  async createPdf(): Promise<Blob | null> {
+  async createPdf(): Promise<File | null> {
     const w = await wasm;
     const job = w.PdfJob.new();
     for (const src of this.images) {
@@ -157,7 +165,9 @@ export default class App extends Vue {
     }
     try {
       const result = job.create_pdf();
-      return new Blob([result], { type: "application/pdf" });
+      return new File([result], `${this.name}.pdf`, {
+        type: "application/pdf",
+      });
     } catch (e) {
       console.error(e);
       return null;
@@ -165,15 +175,26 @@ export default class App extends Vue {
   }
 
   async downloadPdf() {
-    const blob = await this.createPdf();
-    if (blob) {
+    const file = await this.createPdf();
+    if (file) {
       const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `${this.name}.pdf`;
+      a.href = URL.createObjectURL(file);
+      a.download = file.name;
       a.style.display = "none";
       document.body.appendChild(a);
       a.click();
       a.remove();
+    }
+  }
+
+  async sharePdf() {
+    const file = await this.createPdf();
+    if (file) {
+      if (!(await sharing.share(file))) {
+        alert(
+          "An unexpected error occurred. Your browser may not support sharing PDF files."
+        );
+      }
     }
   }
 }
