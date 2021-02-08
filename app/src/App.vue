@@ -36,6 +36,11 @@
           </div>
           <div class="container-padding"></div>
         </div>
+
+        <div class="capture-unsupported-warning" v-if="!imageCaptureSupported">
+          <p>Doclight is best used from a mobile browser that <a href="https://caniuse.com/html-media-capture">supports media capture</a>.</p>
+          <p>You can still select JPEG images from this device to convert to a PDF.</p>
+        </div>
       </v-container>
 
       <v-btn
@@ -48,7 +53,7 @@
         aria-label="Add photo"
         @click="addImage"
       >
-        <v-icon>camera_alt</v-icon>
+        <v-icon>{{ imageCaptureSupported ? "camera_alt" : "add_photo_alternate" }}</v-icon>
       </v-btn>
     </v-main>
 
@@ -117,10 +122,15 @@ img {
   max-height: 50vh;
   margin: auto;
 }
+
+.capture-unsupported-warning {
+  margin-top: 16px;
+}
 </style>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import { detectImageCapture } from "./feature-detection";
 import wasm from "./wasm";
 
 @Component({})
@@ -128,6 +138,7 @@ export default class App extends Vue {
   drawer = null;
   name = "";
   images: string[] = [];
+  imageCaptureSupported = true;
 
   snackbars = {
     downloadSuccess: false,
@@ -138,6 +149,7 @@ export default class App extends Vue {
   pwaEvent: { prompt: () => Promise<void> } | null = null;
 
   created() {
+    this.imageCaptureSupported = detectImageCapture();
     const now = new Date();
     this.name =
       `${now.getMonth() + 1}-${now.getDate()}-${now.getFullYear()} ` +
@@ -147,7 +159,7 @@ export default class App extends Vue {
     window.addEventListener("beforeinstallprompt", (e) => {
       e.preventDefault();
 
-      if (!localStorage.getItem("doclight:pwaPromptDontShow")) {
+      if (!localStorage.getItem("doclight:pwaPromptDontShow") && this.imageCaptureSupported) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this.pwaEvent = e as any;
         this.snackbars.pwaPrompt = true;
