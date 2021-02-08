@@ -20,34 +20,7 @@
       <v-container fluid>
         <v-text-field label="Document title" v-model="name"></v-text-field>
 
-        <div class="image-container" :class="{ 'no-overflow-x': drawer }">
-          <div class="container-padding"></div>
-          <div
-            class="image-display"
-            v-for="(src, i) in $store.state.images"
-            :key="src"
-          >
-            <img :src="src" />
-            <v-btn
-              tile
-              :disabled="i === 0"
-              @click="$store.commit('swapImageLeft', i)"
-            >
-              <v-icon>chevron_left</v-icon>
-            </v-btn>
-            <v-btn tile @click="$store.commit('deleteImage', i)">
-              <v-icon>clear</v-icon>
-            </v-btn>
-            <v-btn
-              tile
-              :disabled="i === $store.state.images.length - 1"
-              @click="$store.commit('swapImageRight', i)"
-            >
-              <v-icon>chevron_right</v-icon>
-            </v-btn>
-          </div>
-          <div class="container-padding"></div>
-        </div>
+        <image-list v-if="$store.state.images.length > 0"></image-list>
 
         <div class="capture-unsupported-warning" v-if="!imageCaptureSupported">
           <p>
@@ -93,45 +66,8 @@
     </v-navigation-drawer> -->
 
     <snackbars v-if="$store.state.snackbars.$load"></snackbars>
-
   </v-app>
 </template>
-
-<style lang="scss">
-.image-container {
-  padding: 18px 0;
-  background-color: lightgrey;
-  overflow-x: scroll;
-  display: flex;
-  gap: 16px;
-}
-
-.no-overflow-x {
-  overflow-x: hidden !important;
-}
-
-.container-padding {
-  min-width: 2px;
-}
-
-.image-display {
-  display: grid;
-  grid-template-rows: auto auto;
-  grid-template-columns: auto auto auto;
-  grid-template-areas: "img img img" "left delete right";
-  gap: 4px;
-}
-
-img {
-  grid-area: img;
-  max-height: 50vh;
-  margin: auto;
-}
-
-.capture-unsupported-warning {
-  margin-top: 16px;
-}
-</style>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
@@ -141,6 +77,7 @@ import wasm from "./wasm";
 @Component({
   components: {
     Snackbars: () => import("./components/Snackbars.vue"),
+    ImageList: () => import("./components/ImageList.vue"),
   },
 })
 export default class App extends Vue {

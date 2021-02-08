@@ -20,14 +20,14 @@ export default new Vuex.Store({
     addImage(state, blob: Blob) {
       state.images.push(URL.createObjectURL(blob));
     },
-    swapImageLeft(state, i: number) {
+    moveImageLeft(state, i: number) {
       if (i > 0 && i < state.images.length) {
         const tmp = state.images[i - 1];
         Vue.set(state.images, i - 1, state.images[i]);
         Vue.set(state.images, i, tmp);
       }
     },
-    swapImageRight(state, i: number) {
+    moveImageRight(state, i: number) {
       if (i >= 0 && i < state.images.length - 1) {
         const tmp = state.images[i + 1];
         Vue.set(state.images, i + 1, state.images[i]);
