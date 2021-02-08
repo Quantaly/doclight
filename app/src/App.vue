@@ -92,26 +92,8 @@
       </v-list>
     </v-navigation-drawer> -->
 
-    <!-- TODO these currently modify the state directly instead of through mutations -->
-    <v-snackbar v-model="$store.state.snackbars.downloadSuccess" color="green">
-      Export successful.
-    </v-snackbar>
+    <snackbars v-if="$store.state.snackbars.$load"></snackbars>
 
-    <v-snackbar v-model="$store.state.snackbars.downloadError" color="red">
-      An unexpected error occurred. One or more images may be corrupted.
-    </v-snackbar>
-
-    <v-snackbar v-model="$store.state.snackbars.pwaPrompt" vertical timeout="-1">
-      Install as an app for the best experience!
-
-      <template v-slot:action="{ attrs }">
-        <v-btn color="primary" v-bind="attrs" @click="installPwa">Yes</v-btn>
-        <v-btn text v-bind="attrs" @click="dismissPwaPrompt">No</v-btn>
-        <v-btn text v-bind="attrs" @click="permaDismissPwaPrompt"
-          >Don't show again</v-btn
-        >
-      </template>
-    </v-snackbar>
   </v-app>
 </template>
 
@@ -156,7 +138,11 @@ import { Component, Vue } from "vue-property-decorator";
 import { detectImageCapture } from "./feature-detection";
 import wasm from "./wasm";
 
-@Component({})
+@Component({
+  components: {
+    Snackbars: () => import("./components/Snackbars.vue"),
+  },
+})
 export default class App extends Vue {
   drawer = null;
   imageCaptureSupported = true;
@@ -183,7 +169,7 @@ export default class App extends Vue {
     });
   }
 
-  get name() {
+  get name(): string {
     return this.$store.state.documentName;
   }
 
@@ -236,20 +222,6 @@ export default class App extends Vue {
     } else {
       this.$store.commit("snackbars/show", "downloadError");
     }
-  }
-
-  installPwa() {
-    this.$store.commit("snackbars/hide", "pwaPrompt");
-    this.$store.state.pwaEvent?.prompt();
-  }
-
-  dismissPwaPrompt() {
-    this.$store.commit("snackbars/hide", "pwaPrompt");
-  }
-
-  permaDismissPwaPrompt() {
-    this.$store.commit("snackbars/hide", "pwaPrompt");
-    localStorage.setItem("doclight:pwaPromptDontShow", "f");
   }
 }
 </script>

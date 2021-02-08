@@ -45,16 +45,22 @@ export default new Vuex.Store({
     snackbars: {
       namespaced: true,
       state: {
+        $load: false,
         downloadSuccess: false,
         downloadError: false,
         pwaPrompt: false,
       },
       mutations: {
         show(state, name: string) {
-          state[name] = true;
+          if (name !== "$load") {
+            state.$load = true;
+            state[name] = true;
+          }
         },
         hide(state, name: string) {
-          state[name] = false;
+          if (name !== "$load") {
+            state[name] = false;
+          }
         },
       },
     }
