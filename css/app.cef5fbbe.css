@@ -1,1 +1,0 @@
-.image-container{padding:18px 0;background-color:#d3d3d3;overflow-x:scroll;display:flex;gap:16px}.no-overflow-x{overflow-x:hidden!important}.container-padding{min-width:2px}.image-display{display:grid;grid-template-rows:auto auto;grid-template-columns:auto auto auto;grid-template-areas:"img img img" "left delete right";gap:4px}img{grid-area:img;max-height:50vh;margin:auto}
