@@ -4,7 +4,11 @@
       <!-- <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon> -->
       <v-toolbar-title>Doclight</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn icon :disabled="images.length === 0" @click="downloadPdf">
+      <v-btn
+        icon
+        :disabled="$store.state.images.length === 0"
+        @click="downloadPdf"
+      >
         <v-icon>save_alt</v-icon>
       </v-btn>
       <!-- <v-btn icon disabled>
@@ -16,25 +20,19 @@
       <v-container fluid>
         <v-text-field label="Document title" v-model="name"></v-text-field>
 
-        <div class="image-container" :class="{ 'no-overflow-x': drawer }">
-          <div class="container-padding"></div>
-          <div class="image-display" v-for="(src, i) in images" :key="src">
-            <img :src="src" />
-            <v-btn tile :disabled="i === 0" @click="swapImageLeft(i)">
-              <v-icon>chevron_left</v-icon>
-            </v-btn>
-            <v-btn tile @click="deleteImage(i)">
-              <v-icon>clear</v-icon>
-            </v-btn>
-            <v-btn
-              tile
-              :disabled="i === images.length - 1"
-              @click="swapImageRight(i)"
-            >
-              <v-icon>chevron_right</v-icon>
-            </v-btn>
-          </div>
-          <div class="container-padding"></div>
+        <image-list v-if="$store.state.images.length > 0"></image-list>
+
+        <div class="capture-unsupported-warning" v-if="!imageCaptureSupported">
+          <p>
+            Doclight is best used from a mobile browser that
+            <a href="https://caniuse.com/html-media-capture"
+              >supports media capture</a
+            >.
+          </p>
+          <p>
+            You can still select JPEG images from this device to convert to a
+            PDF.
+          </p>
         </div>
       </v-container>
 
@@ -48,7 +46,9 @@
         aria-label="Add photo"
         @click="addImage"
       >
-        <v-icon>camera_alt</v-icon>
+        <v-icon>{{
+          imageCaptureSupported ? "camera_alt" : "add_photo_alternate"
+        }}</v-icon>
       </v-btn>
     </v-main>
 
@@ -65,79 +65,27 @@
       </v-list>
     </v-navigation-drawer> -->
 
-    <v-snackbar v-model="snackbars.downloadSuccess" color="green">
-      Export successful.
-    </v-snackbar>
-
-    <v-snackbar v-model="snackbars.downloadError" color="red">
-      An unexpected error occurred. One or more images may be corrupted.
-    </v-snackbar>
-
-    <v-snackbar v-model="snackbars.pwaPrompt" vertical timeout="-1">
-      Install as an app for the best experience!
-
-      <template v-slot:action="{ attrs }">
-        <v-btn color="primary" v-bind="attrs" @click="installPwa">Yes</v-btn>
-        <v-btn text v-bind="attrs" @click="dismissPwaPrompt">No</v-btn>
-        <v-btn text v-bind="attrs" @click="permaDismissPwaPrompt"
-          >Don't show again</v-btn
-        >
-      </template>
-    </v-snackbar>
+    <snackbars v-if="$store.state.snackbars.$load"></snackbars>
   </v-app>
 </template>
 
-<style lang="scss">
-.image-container {
-  padding: 18px 0;
-  background-color: lightgrey;
-  overflow-x: scroll;
-  display: flex;
-  gap: 16px;
-}
-
-.no-overflow-x {
-  overflow-x: hidden !important;
-}
-
-.container-padding {
-  min-width: 2px;
-}
-
-.image-display {
-  display: grid;
-  grid-template-rows: auto auto;
-  grid-template-columns: auto auto auto;
-  grid-template-areas: "img img img" "left delete right";
-  gap: 4px;
-}
-
-img {
-  grid-area: img;
-  max-height: 50vh;
-  margin: auto;
-}
-</style>
-
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import { detectImageCapture } from "./feature-detection";
 import wasm from "./wasm";
 
-@Component({})
+@Component({
+  components: {
+    Snackbars: () => import("./components/Snackbars.vue"),
+    ImageList: () => import("./components/ImageList.vue"),
+  },
+})
 export default class App extends Vue {
   drawer = null;
-  name = "";
-  images: string[] = [];
-
-  snackbars = {
-    downloadSuccess: false,
-    downloadError: false,
-    pwaPrompt: false,
-  };
-
-  pwaEvent: { prompt: () => Promise<void> } | null = null;
+  imageCaptureSupported = true;
 
   created() {
+    this.imageCaptureSupported = detectImageCapture();
     const now = new Date();
     this.name =
       `${now.getMonth() + 1}-${now.getDate()}-${now.getFullYear()} ` +
@@ -146,13 +94,24 @@ export default class App extends Vue {
 
     window.addEventListener("beforeinstallprompt", (e) => {
       e.preventDefault();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      this.$store.commit("storePwaEvent", e as any);
 
-      if (!localStorage.getItem("doclight:pwaPromptDontShow")) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        this.pwaEvent = e as any;
-        this.snackbars.pwaPrompt = true;
+      if (
+        !localStorage.getItem("doclight:pwaPromptDontShow") &&
+        this.imageCaptureSupported
+      ) {
+        this.$store.commit("snackbars/show", "pwaPrompt");
       }
     });
+  }
+
+  get name(): string {
+    return this.$store.state.documentName;
+  }
+
+  set name(newName: string) {
+    this.$store.commit("setName", newName);
   }
 
   addImage() {
@@ -163,7 +122,7 @@ export default class App extends Vue {
     input.style.display = "none";
     input.addEventListener("input", () => {
       if (input?.files?.[0]) {
-        this.images.push(URL.createObjectURL(input.files[0]));
+        this.$store.commit("addImage", input.files[0]);
       }
     });
     document.body.appendChild(input);
@@ -171,26 +130,10 @@ export default class App extends Vue {
     input.remove();
   }
 
-  swapImageLeft(i: number) {
-    const tmp = this.images[i - 1];
-    this.$set(this.images, i - 1, this.images[i]);
-    this.$set(this.images, i, tmp);
-  }
-
-  swapImageRight(i: number) {
-    const tmp = this.images[i + 1];
-    this.$set(this.images, i + 1, this.images[i]);
-    this.$set(this.images, i, tmp);
-  }
-
-  deleteImage(i: number) {
-    URL.revokeObjectURL(this.images.splice(i, 1)[0]);
-  }
-
   async createPdf(): Promise<Blob | null> {
     const w = await wasm;
     const job = w.PdfJob.new();
-    for (const src of this.images) {
+    for (const src of this.$store.state.images) {
       job.add_image(new Uint8Array(await (await fetch(src)).arrayBuffer()));
     }
     try {
@@ -207,29 +150,15 @@ export default class App extends Vue {
     if (blob) {
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = `${this.name}.pdf`;
+      a.download = `${this.$store.state.documentName}.pdf`;
       a.style.display = "none";
       document.body.appendChild(a);
       a.click();
       a.remove();
-      this.snackbars.downloadSuccess = true;
+      this.$store.commit("snackbars/show", "downloadSuccess");
     } else {
-      this.snackbars.downloadError = true;
+      this.$store.commit("snackbars/show", "downloadError");
     }
-  }
-
-  installPwa() {
-    this.snackbars.pwaPrompt = false;
-    this.pwaEvent?.prompt();
-  }
-
-  dismissPwaPrompt() {
-    this.snackbars.pwaPrompt = false;
-  }
-
-  permaDismissPwaPrompt() {
-    this.snackbars.pwaPrompt = false;
-    localStorage.setItem("doclight:pwaPromptDontShow", "f");
   }
 }
 </script>
