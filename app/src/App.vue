@@ -36,7 +36,35 @@
         </div>
       </v-container>
 
+      <v-speed-dial
+        v-if="imageCaptureSupported"
+        v-model="speedDial"
+        fixed
+        bottom
+        right
+        dark
+      >
+        <template v-slot:activator>
+          <v-btn
+            fab
+            color="primary"
+            aria-label="Add photo"
+            @click.stop="addImage"
+            @contextmenu.prevent="speedDial = true"
+            ><v-icon>camera_alt</v-icon></v-btn
+          >
+        </template>
+        <v-btn
+          fab
+          small
+          color="primary"
+          aria-label="Add photo from device"
+          @click.stop="addImage(false)"
+          ><v-icon>add_photo_alternate</v-icon></v-btn
+        >
+      </v-speed-dial>
       <v-btn
+        v-else
         fixed
         bottom
         right
@@ -44,11 +72,9 @@
         dark
         color="primary"
         aria-label="Add photo"
-        @click="addImage"
+        @click="addImage(false)"
       >
-        <v-icon>{{
-          imageCaptureSupported ? "camera_alt" : "add_photo_alternate"
-        }}</v-icon>
+        <v-icon>add_photo_alternate</v-icon>
       </v-btn>
     </v-main>
 
@@ -83,6 +109,7 @@ import wasm from "./wasm";
 export default class App extends Vue {
   drawer = null;
   imageCaptureSupported = true;
+  speedDial = false;
 
   created() {
     this.imageCaptureSupported = detectImageCapture();
@@ -99,7 +126,7 @@ export default class App extends Vue {
 
       if (
         !localStorage.getItem("doclight:pwaPromptDontShow") &&
-        this.imageCaptureSupported
+        this.imageCaptureSupported // don't prompt for "the best experience" if the main functionality is gutted
       ) {
         this.$store.commit("snackbars/show", "pwaPrompt");
       }
@@ -114,11 +141,13 @@ export default class App extends Vue {
     this.$store.commit("setName", newName);
   }
 
-  addImage() {
+  addImage(capture = true) {
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "image/jpeg";
-    input.setAttribute("capture", "environment");
+    if (capture && "capture" in input) {
+      (input as { capture: boolean }).capture = true;
+    }
     input.style.display = "none";
     input.addEventListener("input", () => {
       if (input?.files?.[0]) {
