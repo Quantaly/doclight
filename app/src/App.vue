@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-app-bar app color="primary" dark>
-      <!-- <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon> -->
+      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>Doclight</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn
@@ -78,18 +78,31 @@
       </v-btn>
     </v-main>
 
-    <!-- <v-navigation-drawer v-model="drawer" app>
-      <v-list>
-        <v-list-item>
-          <v-list-item-content>
-            <v-list-item-title>Some document</v-list-item-title>
-          </v-list-item-content>
-          <v-list-item-action>
-            <v-icon>delete</v-icon>
-          </v-list-item-action>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer> -->
+    <v-navigation-drawer v-model="drawer" app>
+      <template v-slot:append>
+        <v-divider></v-divider>
+        <v-list>
+          <v-list-item
+            href="https://github.com/Quantaly/doclight"
+            target="_blank"
+          >
+            <v-list-item-action>
+              <v-icon>code</v-icon>
+            </v-list-item-action>
+            <v-list-item-content> View source code </v-list-item-content>
+          </v-list-item>
+          <v-list-item
+            href="https://github.com/Quantaly/doclight/issues/new"
+            target="_blank"
+          >
+            <v-list-item-action>
+              <v-icon>bug_report</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>Report an issue</v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </template>
+    </v-navigation-drawer>
 
     <snackbars v-if="$store.state.snackbars.$load"></snackbars>
   </v-app>
