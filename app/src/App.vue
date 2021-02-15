@@ -111,6 +111,7 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import { detectImageCapture } from "./feature-detection";
+import sanitizeFilename from "./filename-sanitization";
 import wasm from "./wasm";
 
 @Component({
@@ -192,7 +193,7 @@ export default class App extends Vue {
     if (blob) {
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = `${this.$store.state.documentName}.pdf`;
+      a.download = `${sanitizeFilename(this.$store.state.documentName)}.pdf`;
       a.style.display = "none";
       document.body.appendChild(a);
       a.click();
