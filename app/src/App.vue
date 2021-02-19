@@ -18,7 +18,7 @@
 
     <v-main>
       <v-container fluid>
-        <v-text-field label="Document title" v-model="name"></v-text-field>
+        <v-text-field label="Document name" v-model="name"></v-text-field>
 
         <image-list v-if="$store.state.images.length > 0"></image-list>
 

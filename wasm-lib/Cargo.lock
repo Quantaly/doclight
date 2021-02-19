@@ -78,6 +78,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ae44d1a3d5a19df61dd0c8beb138458ac2a53a7ac09eba97d55592540004306b"
 
 [[package]]
+name = "bytes"
+version = "0.5.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0e4cec68f03f32e44924783795810fa50a7035d8c8ebe78580ad7e6c703fba38"
+
+[[package]]
 name = "cfg-if"
 version = "0.1.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -189,7 +195,7 @@ checksum = "212d0f5754cb6769937f4501cc0e67f4f4483c8d2c3e1e922ee9edbe4ab4c7c0"
 
 [[package]]
 name = "doclight-wasm"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "jpeg-to-pdf",
  "wasm-bindgen",
@@ -331,6 +337,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "img-parts"
+version = "0.2.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e210871d2017abd6d46ffc9f743747549cb54fdeef37fbcc829400f52794e4e5"
+dependencies = [
+ "bytes",
+ "crc32fast",
+ "miniz_oxide 0.4.3",
+]
+
+[[package]]
 name = "itoa"
 version = "0.4.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -347,10 +364,11 @@ dependencies = [
 
 [[package]]
 name = "jpeg-to-pdf"
-version = "0.1.1"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "40f07db8022f2d59c9b652b82441558d55006d09e583b21457f9ab5ef9a164af"
+checksum = "88e7b92027b731fcb3c86cf23cfa99d794fa0ed6b56e1c413ffb75aae24cce30"
 dependencies = [
+ "img-parts",
  "jpeg-decoder",
  "kamadak-exif",
  "lazy_static",

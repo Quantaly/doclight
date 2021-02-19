@@ -1,4 +1,4 @@
-use jpeg_to_pdf::create_pdf_from_jpegs;
+use jpeg_to_pdf::JpegToPdf;
 use std::error::Error;
 use std::io::{prelude::*, BufWriter};
 use wasm_bindgen::prelude::*;
@@ -23,10 +23,14 @@ impl PdfJob {
         self.jpegs.push(image);
     }
 
-    pub fn create_pdf(self, dpi: Option<f64>) -> Result<Vec<u8>, JsValue> {
+    pub fn create_pdf(self) -> Result<Vec<u8>, JsValue> {
         let mut out = Vec::new();
         let mut buf = BufWriter::new(&mut out);
-        create_pdf_from_jpegs(self.jpegs, &mut buf, dpi).map_err(jsify_error)?;
+        JpegToPdf::new()
+            .add_images(self.jpegs)
+            .strip_exif(true)
+            .create_pdf(&mut buf)
+            .map_err(jsify_error)?;
         buf.flush().map_err(jsify_error)?;
         drop(buf);
         Ok(out)
