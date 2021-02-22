@@ -111,8 +111,6 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import { detectImageCapture } from "./feature-detection";
-import sanitizeFilename from "./filename-sanitization";
-import wasm from "./wasm";
 
 @Component({
   components: {
@@ -173,31 +171,14 @@ export default class App extends Vue {
     input.remove();
   }
 
-  async createPdf(): Promise<Blob | null> {
-    const w = await wasm;
-    const job = w.PdfJob.new();
-    for (const src of this.$store.state.images) {
-      job.add_image(new Uint8Array(await (await fetch(src)).arrayBuffer()));
-    }
-    try {
-      const result = job.create_pdf();
-      return new Blob([result], { type: "application/pdf" });
-    } catch (e) {
-      console.error(e);
-      return null;
-    }
-  }
-
   async downloadPdf() {
-    const blob = await this.createPdf();
-    if (blob) {
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `${sanitizeFilename(this.$store.state.documentName)}.pdf`;
-      a.style.display = "none";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
+    const pdf = await import("./pdf");
+    if (
+      await pdf.downloadPdf(
+        this.$store.state.images,
+        this.$store.state.documentName
+      )
+    ) {
       this.$store.commit("snackbars/show", "downloadSuccess");
     } else {
       this.$store.commit("snackbars/show", "downloadError");
