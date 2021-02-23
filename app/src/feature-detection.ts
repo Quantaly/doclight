@@ -8,3 +8,7 @@ export function detectImageCapture(): boolean {
     dummy.accept = 'image/jpeg';
     return 'capture' in dummy;
 }
+
+export function detectWebShare(): boolean {
+    return !!navigator.share;
+}

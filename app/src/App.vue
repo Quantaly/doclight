@@ -82,6 +82,13 @@
       <template v-slot:append>
         <v-divider></v-divider>
         <v-list>
+          <v-list-item v-if="webShareSupported" @click="share">
+            <v-list-item-action>
+              <v-icon>share</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>Share Doclight</v-list-item-content>
+          </v-list-item>
+
           <v-list-item
             href="https://github.com/Quantaly/doclight"
             target="_blank"
@@ -89,8 +96,9 @@
             <v-list-item-action>
               <v-icon>code</v-icon>
             </v-list-item-action>
-            <v-list-item-content> View source code </v-list-item-content>
+            <v-list-item-content>View source code</v-list-item-content>
           </v-list-item>
+
           <v-list-item
             href="https://github.com/Quantaly/doclight/issues/new"
             target="_blank"
@@ -110,7 +118,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { detectImageCapture } from "./feature-detection";
+import { detectImageCapture, detectWebShare } from "./feature-detection";
 
 @Component({
   components: {
@@ -121,10 +129,12 @@ import { detectImageCapture } from "./feature-detection";
 export default class App extends Vue {
   drawer = null;
   imageCaptureSupported = true;
+  webShareSupported = false;
   speedDial = false;
 
   created() {
     this.imageCaptureSupported = detectImageCapture();
+    this.webShareSupported = detectWebShare();
     const now = new Date();
     this.name =
       `${now.getMonth() + 1}-${now.getDate()}-${now.getFullYear()} ` +
@@ -183,6 +193,15 @@ export default class App extends Vue {
     } else {
       this.$store.commit("snackbars/show", "downloadError");
     }
+  }
+
+  share() {
+    navigator.share({
+      title: "Doclight",
+      text:
+        "Try Doclight, the simple PDF-scanning app that runs in the browser",
+      url: "https://quantaly.github.io/doclight",
+    });
   }
 }
 </script>
