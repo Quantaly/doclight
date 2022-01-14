@@ -153,6 +153,13 @@ export default class App extends Vue {
         this.$store.commit("snackbars/show", "pwaPrompt");
       }
     });
+
+    const darkThemeQuery = matchMedia("(prefers-color-scheme: dark)");
+    this.$vuetify.theme.dark = darkThemeQuery.matches;
+    darkThemeQuery.addEventListener(
+      "change",
+      (e) => (this.$vuetify.theme.dark = e.matches)
+    );
   }
 
   get name(): string {
@@ -168,7 +175,8 @@ export default class App extends Vue {
     input.type = "file";
     input.accept = "image/jpeg";
     if (capture && "capture" in input) {
-      (input as { capture: boolean }).capture = true;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (input as any).capture = true;
     }
     input.style.display = "none";
     input.addEventListener("input", () => {
@@ -198,8 +206,7 @@ export default class App extends Vue {
   share() {
     navigator.share({
       title: "Doclight",
-      text:
-        "Try Doclight, the simple PDF-scanning app that runs in the browser",
+      text: "Try Doclight, the simple PDF-scanning app that runs in the browser",
       url: "https://quantaly.github.io/doclight",
     });
   }

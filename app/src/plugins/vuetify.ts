@@ -13,6 +13,9 @@ export default new Vuetify({
         themes: {
             light: {
                 primary: colors.indigo,
+            },
+            dark: {
+                primary: colors.indigo,
             }
         },
     },
