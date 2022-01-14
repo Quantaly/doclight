@@ -33,10 +33,14 @@
 .container {
   margin-bottom: 16px;
   padding: 16px 0;
-  background-color: lightgrey;
   overflow-x: scroll;
   display: flex;
   gap: 14px;
+
+  background-color: lightgrey;
+  @media (prefers-color-scheme: dark) {
+    background-color: #222;
+  }
 }
 
 .no-overflow-x {
