@@ -1,14 +1,14 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "6b28bb1355065800b396",
-    "url": "/doclight/4daeac39347fcc1eff0a.module.wasm"
+    "revision": "e59a81d188894fe5cb03",
+    "url": "/doclight/81b7be939e7612c5d78e.module.wasm"
   },
   {
-    "revision": "eadd6492325468998aed",
+    "revision": "5fc46907fbe493e617e8",
     "url": "/doclight/css/chunk-4513154d.edb7afb8.css"
   },
   {
-    "revision": "4841df9b52082a18a2fe",
+    "revision": "c03ed29d8b1d01e35f72",
     "url": "/doclight/css/chunk-64277fec.4e18f54d.css"
   },
   {
@@ -16,28 +16,28 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/doclight/css/chunk-vendors.f53bebd9.css"
   },
   {
-    "revision": "394499a79ccd6ee406ee1e60a115d122",
+    "revision": "0d05167325fc6b89c985fa5768fd2e91",
     "url": "/doclight/index.html"
   },
   {
-    "revision": "ef879f2217fa8c3625b2",
-    "url": "/doclight/js/app.f3e68888.js"
+    "revision": "47a74444b86ad0e62de1",
+    "url": "/doclight/js/app.d81ab473.js"
   },
   {
     "revision": "321308127e92db4e7be0",
     "url": "/doclight/js/chunk-2d21a3c8.bb045256.js"
   },
   {
-    "revision": "eadd6492325468998aed",
-    "url": "/doclight/js/chunk-4513154d.c686393a.js"
+    "revision": "5fc46907fbe493e617e8",
+    "url": "/doclight/js/chunk-4513154d.07b69b91.js"
   },
   {
-    "revision": "4841df9b52082a18a2fe",
-    "url": "/doclight/js/chunk-64277fec.625f791b.js"
+    "revision": "c03ed29d8b1d01e35f72",
+    "url": "/doclight/js/chunk-64277fec.28b44dd3.js"
   },
   {
-    "revision": "6b28bb1355065800b396",
-    "url": "/doclight/js/chunk-a93cb1b4.278ef989.js"
+    "revision": "e59a81d188894fe5cb03",
+    "url": "/doclight/js/chunk-a93cb1b4.b4fe9135.js"
   },
   {
     "revision": "2961f660ca2a3ecf44b1",
